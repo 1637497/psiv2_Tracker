@@ -1,9 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Oct 17 20:22:16 2024
 
-@author: Usuario
-"""
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -25,7 +20,7 @@ fps = cap.get(cv2.CAP_PROP_FPS)
 frame_width = int(cap.get(3))
 frame_height = int(cap.get(4))
 
-out = cv2.VideoWriter(r'C:\Users\Usuario\OneDrive\Escriptori\UAB\4t\psiv\seguiment\resultatyolotrack1.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (frame_width, frame_height))
+# out = cv2.VideoWriter(r'C:\Users\Usuario\OneDrive\Escriptori\UAB\4t\psiv\seguiment\resultatyolotrack1.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (frame_width, frame_height))
 
 def drawRectangle(frame, bbox):
     p1 = (int(bbox[0]), int(bbox[1]))
@@ -106,7 +101,7 @@ while True:
         
         
         
-    out.write(frame)
+    # out.write(frame)
     cv2.imshow("frame",frame)
     
 
@@ -116,7 +111,6 @@ while True:
         break
 
 cap.release()
-out.release()
+# out.release()
 cv2.destroyAllWindows()
-
 
