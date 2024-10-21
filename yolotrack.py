@@ -13,7 +13,7 @@ pathlib.PosixPath = pathlib.WindowsPath
 import cv2
 
 cap = cv2.VideoCapture(r"C:\Users\Usuario\OneDrive\Escriptori\UAB\4t\psiv\seguiment\output2moltcurt.mp4")
-model1=torch.hub.load('ultralytics/yolov5','custom', path='C:/Users/Usuario/OneDrive/Escriptori/UAB/4t/psiv/seguiment/model/best.pt')#, force_reload=True)
+model1=torch.hub.load('ultralytics/yolov5','custom', path='C:/Users/Usuario/OneDrive/Escriptori/UAB/4t/psiv/seguiment/model/best50.pt')#, force_reload=True)
 
 
 fps = cap.get(cv2.CAP_PROP_FPS)
