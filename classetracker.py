@@ -19,12 +19,10 @@ model1 = torch.hub.load('ultralytics/yolov5', 'custom', path='C:/Users/Usuario/O
 
 def detectar(i):
     ll=[]
-    print("cotxe")
     results = model1(i)
 
     ims = np.squeeze(results.render())
     
-    cv2.imwrite('croiss.jpg', ims)
     
     df = results.pandas().xyxy[0]
 
