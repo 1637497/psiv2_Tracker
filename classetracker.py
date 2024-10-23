@@ -10,18 +10,21 @@ import pathlib
 import matplotlib.pyplot as plt
 from time import time
 
-t0=time()
+# Substituir el Path en cas de Windows
 temp = pathlib.PosixPath
 pathlib.PosixPath = pathlib.WindowsPath
-cap = cv2.VideoCapture(r"C:\Users\Usuario\OneDrive\Escriptori\UAB\4t\psiv\seguiment\output2curt.mp4")
-model1 = torch.hub.load('ultralytics/yolov5', 'custom', path='C:/Users/Usuario/OneDrive/Escriptori/UAB/4t/psiv/seguiment/model/best25.pt')#,force_reload=True)
+
+# cap = cv2.VideoCapture(r"C:\Users\Usuario\OneDrive\Escriptori\UAB\4t\psiv\seguiment\output2curt.mp4")
+cap = cv2.VideoCapture('output2.mp4')
+model1 = torch.hub.load('ultralytics/yolov5', 'custom', path='C:/Users/arnau/Desktop/4t Eng/1r Semestre/PSIV 2/Reptes/Tracker/best50.pt')
+
 
 
 fps = cap.get(cv2.CAP_PROP_FPS)
 frame_width = int(cap.get(3))
 frame_height = int(cap.get(4))
 
-out = cv2.VideoWriter(r'C:\Users\Usuario\OneDrive\Escriptori\UAB\4t\psiv\seguiment\resultattrack.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (frame_width, frame_height))
+# out = cv2.VideoWriter(r'C:\Users\Usuario\OneDrive\Escriptori\UAB\4t\psiv\seguiment\resultattrack.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (frame_width, frame_height))
 
 
 def detectar(i):
@@ -132,56 +135,65 @@ class CentroidTracker:
 tracker = CentroidTracker()
 object_detector = cv2.createBackgroundSubtractorMOG2(history=100, varThreshold=40)
 
-i=0
+t0 = time()
+
+i = 0
+prev_bboxes = []  
 
 while True:
-    yolo=False
-    i+=1
+    i += 1
     ret, frame = cap.read()
-    
+
     if not ret:
         break
-    
+
     roi = frame[340:960, 50:380]
     mask = object_detector.apply(roi)
     _, mask = cv2.threshold(mask, 254, 255, cv2.THRESH_BINARY)
     contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    
-    for cnt in contours:
-        area = cv2.contourArea(cnt)
-        if area > 100:
-            yolo=True
-            break
-    if yolo:
-        # if i %2 ==0:
-            
+
+    if i % 4 == 0:
+        yolo = False
+        for cnt in contours:
+            area = cv2.contourArea(cnt)
+            if area > 100:
+                yolo = True
+                break
+        
+        if yolo:
             bboxes = detectar(roi)
-        
+            if bboxes:
+                prev_bboxes = bboxes 
+
             objects = tracker.update(bboxes)
-        
-            for (objectID, centroid) in objects.items():
-                for (startX, startY, endX, endY) in bboxes:
-                    
-                    
-                    adj_startX, adj_startY = startX + 50, startY + 340
-                    adj_endX, adj_endY = endX + 50, endY + 340
-        
-                    cv2.rectangle(frame, (adj_startX, adj_startY), (adj_endX, adj_endY), (0, 255, 0), 2)
-                cv2.putText(frame, f"ID {objectID}", (centroid[0] + 50 - 10, centroid[1] + 340 - 10),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
-                cv2.circle(frame, (centroid[0]+50, centroid[1]+340), 4, (0, 255, 0), -1)
-            
-    
-    # cv2.imshow('mask',mask)
-    # cv2.imshow('Tracking', frame)
-    out.write(frame)
-    if cv2.waitKey(30) & 0xFF == ord('q'):
+        else:
+            objects = tracker.update(prev_bboxes)
+
+    else:
+        objects = tracker.update(prev_bboxes)
+
+    for (objectID, centroid) in objects.items():
+        for (startX, startY, endX, endY) in prev_bboxes:
+            adj_startX, adj_startY = startX + 50, startY + 340
+            adj_endX, adj_endY = endX + 50, endY + 340
+
+            cv2.rectangle(frame, (adj_startX, adj_startY), (adj_endX, adj_endY), (0, 255, 0), 2)
+        cv2.putText(frame, f"ID {objectID}", (centroid[0] + 50 - 10, centroid[1] + 340 - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+        cv2.circle(frame, (centroid[0] + 50, centroid[1] + 340), 4, (0, 255, 0), -1)
+
+    cv2.imshow('mask', mask)
+    cv2.imshow('Tracking', frame)
+    # out.write(frame)
+
+    key = cv2.waitKey(30)
+    if key == 27:
         break
 
 cap.release()
-out.release()
+# out.release()
 cv2.destroyAllWindows()
-t=time()
-print("Número total de franes:",i)
-print("Ha trigat",t-t0,"segons")
-print("Ha trigat",(t-t0)/60,"minuts")
+t = time()
+print("Número total de frames:", i)
+print("Ha trigat", t - t0, "segons")
+print("Ha trigat", (t - t0) / 60, "minuts")
