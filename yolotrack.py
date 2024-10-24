@@ -1,5 +1,3 @@
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 from tensorflow.keras.models import load_model
@@ -49,46 +47,23 @@ def drawRectangle(frame, bbox):
 def detectar(model,i):
         print("cotxe")
         results=model1(i) 
-    
-        ims=np.squeeze(results.render())
-    
-    
-        df=results.pandas().xyxy[0]
-    
-        df=df[df['confidence']>0.49]
-    
-        df=df.to_dict(orient='records')
-    
-    
+        ims=np.squeeze(results.render()) 
+        df=results.pandas().xyxy[0]    
+        df=df[df['confidence']>0.49]    
+        df=df.to_dict(orient='records')    
         for cotxe in df:
-    
             xmin=round(cotxe['xmin'])
-    
-            ymin=round(cotxe['ymin'])
-    
-            xmax=round(cotxe['xmax'])
-    
+            ymin=round(cotxe['ymin'])  
+            xmax=round(cotxe['xmax'])    
             ymax=round(cotxe['ymax'])
-            
-            
-        
         return (xmin, ymin, xmax - xmin, ymax - ymin)
 
 
-    
-            
-
 detectat=False
 tracker = cv2.legacy.TrackerCSRT.create()
-
 while True:
-    
     ret, frame = cap.read()    
-   
     roi = frame[350:460,50:440]
-    
-    
-    
     if not detectat:
         bbox=detectar(model1, roi)
         bbox=(bbox[0]+50,bbox[1]+350,bbox[2],bbox[3])
@@ -97,18 +72,13 @@ while True:
     if detectat:
         ok, bbox = tracker.update(frame)
         if ok:
-            drawRectangle(frame, bbox)
-        
-        
-        
+            drawRectangle(frame, bbox)       
     # out.write(frame)
-    cv2.imshow("frame",frame)
-    
-
-    
+    cv2.imshow("frame",frame)   
     key = cv2.waitKey(30)
     if key & 0xFF == ord('q'):
         break
+
 
 cap.release()
 # out.release()
