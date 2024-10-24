@@ -41,7 +41,6 @@ class CentroidTracker():
             cols = D.argmin(axis=1)[rows]
             usedRows = set()
             usedCols = set()
-
             for (row, col) in zip(rows, cols):
                 if row in usedRows or col in usedCols:
                     continue
@@ -50,19 +49,15 @@ class CentroidTracker():
                 self.disappeared[objectID] = 0
                 usedRows.add(row)
                 usedCols.add(col)
-
             unusedRows = set(range(0, D.shape[0])).difference(usedRows)
             unusedCols = set(range(0, D.shape[1])).difference(usedCols)
-
             for row in unusedRows:
                 objectID = objectIDs[row]
                 self.disappeared[objectID] += 1
                 if self.disappeared[objectID] > self.maxDisappeared:
                     self.deregister(objectID)
-
             for col in unusedCols:
                 self.register(inputCentroids[col])
-
         return self.objects
 
 # Video input and object detection using background subtraction
@@ -79,23 +74,18 @@ while True:
     ret, frame = cap.read()
     if not ret:
         break
-
     roi = frame[350:960, 10:500]
     mask = object_detector.apply(roi)
     _, mask = cv2.threshold(mask, 254, 255, cv2.THRESH_BINARY)
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
     bboxes = []
     for cnt in contours:
         if cv2.contourArea(cnt) > 3000:
             x, y, w, h = cv2.boundingRect(cnt)
             bboxes.append((x, y, x+w, y+h))
-
     if bboxes:
         prev_bboxes = bboxes
-
     objects = tracker.update(np.array([(int((x + w) / 2), int((y + h) / 2)) for x, y, w, h in prev_bboxes]))
-
     for (objectID, centroid) in objects.items():
         for (startX, startY, endX, endY) in prev_bboxes:
             adj_startX, adj_startY = startX , startY
@@ -104,14 +94,13 @@ while True:
         cv2.putText(roi, f"ID {objectID}", (centroid[0] - 10, centroid[1] - 10),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
         cv2.circle(roi, (centroid[0] , centroid[1] ), 4, (0, 255, 0), -1)
-
     cv2.imshow('ROI', roi)
     cv2.imshow('Frame', frame)
     cv2.imshow('Mask', mask)
-
     key = cv2.waitKey(30)
     if key == 27:
         break
+
 
 cap.release()
 cv2.destroyAllWindows()
