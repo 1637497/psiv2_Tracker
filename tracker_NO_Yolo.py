@@ -1,10 +1,8 @@
 import cv2
 
-print("1")
-cap = cv2.VideoCapture('output7.mp4')
-print("2")
+cap = cv2.VideoCapture('output2.mp4')
 
-object_detector = cv2.createBackgroundSubtractorMOG2(history=100, varThreshold=40)
+object_detector = cv2.createBackgroundSubtractorMOG2(history=500, varThreshold=50)
 
 while True:
     ret, frame = cap.read()
@@ -15,11 +13,12 @@ while True:
     roi = frame[350: 960, 10: 500]
 
     mask = object_detector.apply(roi)
+    _, mask = cv2.threshold(mask, 254, 255, cv2.THRESH_BINARY)
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     for cnt in contours:
-        if cv2.contourArea(cnt) > 1500:
+        if cv2.contourArea(cnt) > 3000:
             x, y, w, h = cv2.boundingRect(cnt)
-            cv2.drawContours(roi, [cnt], -1, (0, 255, 0), 3)
+            cv2.rectangle(roi, (x, y), (x+w, y+h), (0, 255, 0), 3)
 
     cv2.imshow('ROI', roi)
     cv2.imshow('Frame', frame)
