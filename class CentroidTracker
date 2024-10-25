@@ -47,6 +47,8 @@ class CentroidTracker:
             
             
             D = dist.cdist(np.array(objectCentroids), inputCentroids)
+            print("Distàncies:",D)
+            
             
             #Creem diccionari on la clau és l'ID dels centroids que ja 
             #teníem i els valors son la distància a cada un dels centroids nous
@@ -67,28 +69,38 @@ class CentroidTracker:
                 actual=parella[0]
                 nou=parella[1]
                 
+                #Comprovem si la distància és major que maxDistance
                 if D[actual,nou]>self.maxDistance:
                     continue
                 
+                #Mirem si ja hem revisat el centroid
                 if actual not in idsactuals or nou not in idsnous:
                     continue
                 
+                #Aconseguim l'ID del centroid actual
                 objectID = objectIDs[actual]
+                #Ara actualitzem el centroid actual amb el valor del nou
                 self.objects[objectID] = inputCentroids[nou]
+                #Posem desaparegut a 0
                 self.disappeared[objectID] = 0
+                #Borrem de les llistes per indicar que ja els hem revisat
                 idsactuals.remove(actual)
                 idsnous.remove(nou)
-
-            
+                
+            #Ara a les llistes nomes queden aquells centroids que no hem revisat
+            #Per tant, si hi ha més idsnous que actuals, haurem de registrar-los
             if len(idsnous)>len(idsactuals):
                 for id in idsnous:
                     self.register(inputCentroids[id])
-                    
+            
+            #Però si n'hi ha més d'actuals que de nous,
+            #significarà que alguns hauran desaparegut
             else:
                 for id in idsactuals:
                     objectID = objectIDs[id]
                     self.disappeared[objectID] += 1
                     if self.disappeared[objectID] > self.maxDisappeared:
+                        #Si porta massa temps desaparegut, l'eliminem
                         self.deregister(objectID)
 
         return self.objects
