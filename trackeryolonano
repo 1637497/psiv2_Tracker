@@ -19,7 +19,7 @@ fps = cap.get(cv2.CAP_PROP_FPS)
 frame_width = int(cap.get(3))
 frame_height = int(cap.get(4))
 
-# out = cv2.VideoWriter(r'C:\Users\Usuario\OneDrive\Escriptori\UAB\4t\psiv\seguiment\proves\yolonanomeu650.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (frame_width, frame_height))
+# out = cv2.VideoWriter(r'C:\Users\Usuario\OneDrive\Escriptori\UAB\4t\psiv\seguiment\proves\out.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (frame_width, frame_height))
 
 
 def detectar(i):
