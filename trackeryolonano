@@ -197,13 +197,13 @@ while True:
     objects = tracker.update(bboxes)
     
     for (objectID, centroid) in objects.items():
-            # for (startX, startY, endX, endY) in bboxes:
+            for (startX, startY, endX, endY) in bboxes:
                 
                 
-            #     adj_startX, adj_startY = startX + 50, startY + 650
-            #     adj_endX, adj_endY = endX + 50, endY + 650
+                adj_startX, adj_startY = startX + 50, startY + 650
+                adj_endX, adj_endY = endX + 50, endY + 650
     
-            #     cv2.rectangle(frame, (adj_startX, adj_startY), (adj_endX, adj_endY), (0, 255, 0), 2)
+                cv2.rectangle(frame, (adj_startX, adj_startY), (adj_endX, adj_endY), (0, 255, 0), 2)
             cv2.putText(frame, f"ID {objectID}", (centroid[0] + 50 - 10, centroid[1] + 650 - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
             cv2.circle(frame, (centroid[0]+50, centroid[1]+650), 4, (0, 255, 0), -1)
