@@ -1,8 +1,6 @@
 from scipy.spatial import distance as dist
 from collections import OrderedDict
 import numpy as np
-
-
 import cv2
 import torch
 import pathlib
