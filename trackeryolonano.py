@@ -36,7 +36,7 @@ def detectar(i):
     # df = df[df['name'] == 'car']
 
 
-    df = df[df['confidence'] > 0.65]
+    df = df[df['confidence'] > 0.9]
        
     df = df.to_dict(orient='records')
     
@@ -56,7 +56,7 @@ def detectar(i):
 
 
 class CentroidTracker:
-    def __init__(self, maxDisappeared=25,maxDistance=50):
+    def __init__(self, maxDisappeared=50,maxDistance=50):
         self.nextObjectID = 0
         self.objects = OrderedDict()
         self.disappeared = OrderedDict()
@@ -187,9 +187,11 @@ while True:
             yolo=True
             break
     if yolo:
-        if i%3==0:
+        if i%2==0:
             bboxes = detectar(roi)
             prev_bboxes = bboxes
+        else:
+            bboxes=prev_bboxes
     else:
             bboxes=prev_bboxes
 
