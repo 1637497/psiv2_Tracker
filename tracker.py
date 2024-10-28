@@ -1,8 +1,6 @@
 from scipy.spatial import distance as dist
 from collections import OrderedDict
 import numpy as np
-
-
 import cv2
 import torch
 import pathlib
@@ -25,7 +23,7 @@ def detectar(i):
     cv2.imwrite('class.jpg', ims)
     df = results.pandas().xyxy[0]
     # df = df[df['name'] == 'car']
-    df = df[df['confidence'] > 0.70]
+    df = df[df['confidence'] > 0.65]
     df = df.to_dict(orient='records')
     if df:
         for cotxe in df: 
@@ -151,11 +149,10 @@ cotxes_pujen = 0
 cotxes_baixen = 0
 cotxes_ids = {}
 
-output_filename = 'bo_output3_70_nano150_roi70.mp4'
+output_filename = 'bo_output3_65_nano150_roi70.mp4'
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 out = cv2.VideoWriter(output_filename, fourcc, fps, (frame_width, frame_height))
- 
- 
+  
 while True:
     i += 1
     ret, frame = cap.read()
